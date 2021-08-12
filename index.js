@@ -46,7 +46,7 @@ async function main() {
     const TRIGGER_PHRASE = core.getInput("trigger-phrase");
     const TASK_COMMENT = core.getInput("task-comment");
     let PULL_REQUEST;
-    core.info(github.context);
+    core.info(JSON.stringify(github.context));
 
     if (github.context.eventName === "push") {
       const token = core.getInput("github-token", { required: true }) || process.env.GITHUB_TOKEN;
@@ -58,7 +58,7 @@ async function main() {
       const context = github.context;
       const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
         owner: context.repo.owner,
-        repo: context.repo.repo,
+        repo: context.repo.rååepo,
         commit_sha: sha,
       });
 
