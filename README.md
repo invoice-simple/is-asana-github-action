@@ -1,6 +1,6 @@
 # Github-Asana action
 
-This action integrates asana with github. Any errors in this action will cause the step to fail as a merge protection rule.
+This action integrates asana with github, mainly to enforce linking an Asana task to a PR in the description. When a PR is opened or reopened it will add a link to the PR in the Asana task provided. Any errors in this action will cause the action to fail.
 
 ### Prerequisites
 
@@ -11,7 +11,7 @@ This action integrates asana with github. Any errors in this action will cause t
 
 ### `asana-pat`
 
-**Required** Your public access token of asana, you can find it in [asana docs](https://developers.asana.com/docs/#authentication-basics).
+**Required** Your asana public access token, you can find it in [asana docs](https://developers.asana.com/docs/#authentication-basics).
 
 ### `trigger-phrase`
 
@@ -19,17 +19,11 @@ This action integrates asana with github. Any errors in this action will cause t
 
 ### `github-token`
 
-**Required** Your Github token
+**Required** Personal or organizational Github token
 
 ### `task-comment`
 
 **Optional** If any comment is provided, the action will add a comment to the specified asana task with the text & pull request link.
-
-```yaml
-targets: '[{"project": "Backlog", "section": "Development Done"}, {"project": "Current Sprint", "section": "In Review"}]'
-```
-
-if you don't want to move tasks omit `targets`.
 
 ## Sample PR Description
 
@@ -40,19 +34,24 @@ if you don't want to move tasks omit `targets`.
 #### Without special characters:
 
 ```yaml
+name: Asana task check
+
+on:
+  push:
+  pull_request:
+    types: [opened, reopened]
+
 jobs:
   asana:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
       - name: Add to Asana
-        uses: invoice-simple/is-asana-github-action@v1.0.7
+        uses: invoice-simple/is-asana-github-action@v1.1.1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           asana-pat: ${{ secrets.ASANA_TOKEN }}
-          task-comment: "Pull Request: "
-          trigger-phrase: "Link:"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          task-comment: 'Pull Request: '
+          trigger-phrase: 'Link:'
 ```
 
 ## Publishing new version:
