@@ -21,20 +21,23 @@ async function asanaOperations(asanaPAT, taskId, taskComment) {
 }
 
 async function getPullRequest() {
-  const token = core.getInput("github-token", { required: true }) || process.env.GITHUB_TOKEN;
-  const state = (core.getInput("state", { required: false }) || "open").toLowerCase();
-  const sha = github.context.sha;
+  if (github.context.eventName === "push") {
+    const token = core.getInput("github-token", { required: true }) || process.env.GITHUB_TOKEN;
+    const state = (core.getInput("state", { required: false }) || "open").toLowerCase();
+    const sha = github.context.sha;
 
-  const octokit = github.getOctokit(token);
-  const context = github.context;
-  const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    commit_sha: sha,
-  });
+    const octokit = github.getOctokit(token);
+    const context = github.context;
+    const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      commit_sha: sha,
+    });
 
-  const prs = result.data.filter((el) => state === "all" || el.state === state);
-  return prs[0];
+    const prs = result.data.filter((el) => state === "all" || el.state === state);
+    return prs[0];
+  }
+  return github.context.payload.pull_request;
 }
 
 async function main() {
@@ -45,25 +48,18 @@ async function main() {
     `${TRIGGER_PHRASE} *\\[(.*?)\\]\\(https:\\/\\/app.asana.com\\/(\\d+)\\/(?<project>\\d+)\\/(?<task>\\d+).*?\\)`,
     "g"
   );
-
-  let PULL_REQUEST;
+  const PULL_REQUEST = await getPullRequest();
   let taskComment = null;
 
   if (!ASANA_PAT) {
     throw new Error("Asana PAT not found!");
   }
 
-  if (github.context.eventName === "push") {
-    PULL_REQUEST = await getPullRequest();
-    core.info(PULL_REQUEST);
-  } else {
-    PULL_REQUEST = github.context.payload.pull_request;
-
-    if (TASK_COMMENT) {
-      taskComment = `${TASK_COMMENT} ${PULL_REQUEST.html_url}`;
-      core.info(taskComment);
-    }
+  if (TASK_COMMENT) {
+    taskComment = `${TASK_COMMENT} ${PULL_REQUEST.html_url}`;
+    core.info(taskComment);
   }
+
   let parseAsanaURL = REGEX.exec(PULL_REQUEST.body);
   if (!parseAsanaURL) {
     throw new Error("Asana task URL not found!");
