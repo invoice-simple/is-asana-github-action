@@ -20,7 +20,7 @@ async function asanaOperations(asanaPAT, taskId, taskComment) {
   }
 }
 
-function getPullRequest() {
+async function getPullRequest() {
   const token = core.getInput("github-token", { required: true }) || process.env.GITHUB_TOKEN;
   const state = (core.getInput("state", { required: false }) || "open").toLowerCase();
   const sha = github.context.sha;
@@ -55,6 +55,7 @@ async function main() {
 
   if (github.context.eventName === "push") {
     PULL_REQUEST = getPullRequest();
+    core.info(PULL_REQUEST);
   } else {
     PULL_REQUEST = github.context.payload.pull_request;
 
