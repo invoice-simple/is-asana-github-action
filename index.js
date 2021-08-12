@@ -54,7 +54,7 @@ async function main() {
   }
 
   if (github.context.eventName === "push") {
-    PULL_REQUEST = getPullRequest();
+    PULL_REQUEST = await getPullRequest();
     core.info(PULL_REQUEST);
   } else {
     PULL_REQUEST = github.context.payload.pull_request;
