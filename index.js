@@ -49,6 +49,7 @@ async function main() {
 
     if (github.context.eventName === "push") {
       const token = core.getInput("github-token", { required: false }) || process.env.GITHUB_TOKEN;
+      core.info(token);
       const state = (core.getInput("state", { required: false }) || "open").toLowerCase();
       const sha = core.getInput("sha", { required: true });
 
