@@ -46,9 +46,10 @@ async function main() {
     const TRIGGER_PHRASE = core.getInput("trigger-phrase");
     const TASK_COMMENT = core.getInput("task-comment");
     let PULL_REQUEST;
+    core.info(github.context);
 
     if (github.context.eventName === "push") {
-      const token = core.getInput("github-token", { required: false }) || process.env.GITHUB_TOKEN;
+      const token = core.getInput("github-token", { required: true }) || process.env.GITHUB_TOKEN;
       core.info(token);
       const state = (core.getInput("state", { required: false }) || "open").toLowerCase();
       const sha = core.getInput("sha", { required: true });

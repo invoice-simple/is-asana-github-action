@@ -16,6 +16,9 @@ inputs:
   sha:
     description: "The commit SHA that triggered the workflow run"
     required: true
+  github-token:
+    description: "GitHub token"
+    required: true
 branding:
   icon: "chevron-right"
   color: "gray-dark"
