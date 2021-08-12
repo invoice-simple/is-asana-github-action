@@ -28,7 +28,7 @@ async function asanaOperations(asanaPAT, targets, taskId, taskComment) {
       }
     });
 
-    if (taskComment) {
+    if (taskComment && github.context.eventName !== "push") {
       await client.tasks.addComment(taskId, {
         text: taskComment,
       });
@@ -41,16 +41,39 @@ async function asanaOperations(asanaPAT, targets, taskId, taskComment) {
 
 async function main() {
   try {
-    const ASANA_PAT = core.getInput("asana-pat"),
-      TARGETS = core.getInput("targets"),
-      TRIGGER_PHRASE = core.getInput("trigger-phrase"),
-      TASK_COMMENT = core.getInput("task-comment");
-    core.info(JSON.stringify(github.context));
-    const PULL_REQUEST = github.context.payload.pull_request,
-      REGEX = new RegExp(
-        `${TRIGGER_PHRASE} *\\[(.*?)\\]\\(https:\\/\\/app.asana.com\\/(\\d+)\\/(?<project>\\d+)\\/(?<task>\\d+).*?\\)`,
-        "g"
-      );
+    const ASANA_PAT = core.getInput("asana-pat");
+    const TARGETS = core.getInput("targets");
+    const TRIGGER_PHRASE = core.getInput("trigger-phrase");
+    const TASK_COMMENT = core.getInput("task-comment");
+    let PULL_REQUEST;
+
+    if (github.context.eventName === "push") {
+      const token = core.getInput("github-token", { required: false }) || process.env.GITHUB_TOKEN;
+      const state = (core.getInput("state", { required: false }) || "open").toLowerCase();
+      const sha = core.getInput("sha", { required: true });
+
+      const octokit = github.getOctokit(token);
+      const context = github.context;
+      const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        commit_sha: sha,
+      });
+
+      const prs = result.data.filter((el) => state === "all" || el.state === state);
+      PULL_REQUEST = prs[0];
+    } else {
+      PULL_REQUEST = github.context.payload.pull_request;
+
+      if (TASK_COMMENT) {
+        taskComment = `${TASK_COMMENT} ${PULL_REQUEST.html_url}`;
+        core.info(taskComment);
+      }
+    }
+    const REGEX = new RegExp(
+      `${TRIGGER_PHRASE} *\\[(.*?)\\]\\(https:\\/\\/app.asana.com\\/(\\d+)\\/(?<project>\\d+)\\/(?<task>\\d+).*?\\)`,
+      "g"
+    );
     let taskComment = null,
       targets = TARGETS ? JSON.parse(TARGETS) : [],
       parseAsanaURL = REGEX.exec(PULL_REQUEST.body);
@@ -60,10 +83,6 @@ async function main() {
     }
     if (!ASANA_PAT) {
       throw new Error("Asana PAT not found!");
-    }
-    if (TASK_COMMENT) {
-      taskComment = `${TASK_COMMENT} ${PULL_REQUEST.html_url}`;
-      core.info(taskComment);
     }
     // Works for multiple links in PR description
     REGEX.lastIndex = 0;
