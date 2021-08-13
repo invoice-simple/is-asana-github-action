@@ -48,6 +48,7 @@ async function main() {
     `${TRIGGER_PHRASE} *\\[(.*?)\\]\\(https:\\/\\/app.asana.com\\/(\\d+)\\/(?<project>\\d+)\\/(?<task>\\d+).*?\\)`,
     "g"
   );
+  core.info(JSON.stringify(github.context));
   const PULL_REQUEST = await getPullRequest();
   let taskComment = null;
 
