@@ -17,10 +17,6 @@ This action integrates asana with github, mainly to enforce linking an Asana tas
 
 **Required** Prefix before the task i.e ASANA TASK: https://app.asana.com/1/2/3/. For special characters in the trigger phrase refer to the examples.
 
-### `github-token`
-
-**Required** Personal or organizational Github token
-
 ### `task-comment`
 
 **Optional** If any comment is provided, the action will add a comment to the specified asana task with the text & pull request link.
@@ -46,12 +42,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add to Asana
-        uses: invoice-simple/is-asana-github-action@v1.1.1
+        uses: invoice-simple/is-asana-github-action@v1.1.3
         with:
           asana-pat: ${{ secrets.ASANA_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          task-comment: 'Pull Request: '
-          trigger-phrase: 'Link:'
+          task-comment: "Pull Request: "
+          trigger-phrase: "Link:"
 ```
 
 ## Publishing new version:

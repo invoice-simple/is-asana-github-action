@@ -9,7 +9,7 @@ async function asanaOperations(asanaPAT, taskId, taskComment) {
       logAsanaChangeWarnings: false,
     }).useAccessToken(asanaPAT);
 
-    if (taskComment && github.context.eventName !== "push") {
+    if (taskComment && github.context.payload.action !== "synchronize") {
       await client.tasks.addComment(taskId, {
         text: taskComment,
       });
@@ -20,26 +20,6 @@ async function asanaOperations(asanaPAT, taskId, taskComment) {
   }
 }
 
-async function getPullRequest() {
-  if (github.context.eventName === "push") {
-    const token = core.getInput("github-token", { required: true }) || process.env.GITHUB_TOKEN;
-    const state = (core.getInput("state", { required: false }) || "open").toLowerCase();
-    const sha = github.context.sha;
-
-    const octokit = github.getOctokit(token);
-    const context = github.context;
-    const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      commit_sha: sha,
-    });
-
-    const prs = result.data.filter((el) => state === "all" || el.state === state);
-    return prs[0];
-  }
-  return github.context.payload.pull_request;
-}
-
 async function main() {
   const ASANA_PAT = core.getInput("asana-pat");
   const TRIGGER_PHRASE = core.getInput("trigger-phrase");
@@ -48,8 +28,7 @@ async function main() {
     `${TRIGGER_PHRASE} *\\[(.*?)\\]\\(https:\\/\\/app.asana.com\\/(\\d+)\\/(?<project>\\d+)\\/(?<task>\\d+).*?\\)`,
     "g"
   );
-  core.info(JSON.stringify(github.context));
-  const PULL_REQUEST = await getPullRequest();
+  const PULL_REQUEST = github.context.payload.pull_request;
   let taskComment = null;
 
   if (!ASANA_PAT) {
