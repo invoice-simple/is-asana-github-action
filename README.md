@@ -33,9 +33,7 @@ This action integrates asana with github, mainly to enforce linking an Asana tas
 name: Asana task check
 
 on:
-  push:
   pull_request:
-    types: [opened, reopened]
 
 jobs:
   asana:
