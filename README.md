@@ -15,7 +15,7 @@ This action integrates asana with github, mainly to enforce linking an Asana tas
 
 ### `trigger-phrase`
 
-**Required** Prefix before the task i.e ASANA TASK: https://app.asana.com/1/2/3/. For special characters in the trigger phrase refer to the examples.
+**Required** Prefix before the task i.e Link: [Task Name]https://app.asana.com/1/2/3/.
 
 ### `task-comment`
 
