@@ -7,9 +7,6 @@ inputs:
   task-comment:
     description: "Provide text, which will add a comment with the pull request link to the asana task."
     required: false
-  trigger-phrase:
-    description: "Prefix before the task i.e ASANA TASK: https://app.asana.com/1/2/3"
-    required: true
 branding:
   icon: "chevron-right"
   color: "gray-dark"
