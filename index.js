@@ -25,6 +25,7 @@ async function main() {
   const TASK_COMMENT = core.getInput("task-comment");
   const REGEX = new RegExp(`https:\\/\\/app.asana.com\\/(\\d+)\\/(?<project>\\d+)\\/(?<task>\\d+).*?`, "g");
   const PULL_REQUEST = github.context.payload.pull_request;
+  console.log(PULL_REQUEST);
   let taskComment = null;
 
   if (!ASANA_PAT) {
