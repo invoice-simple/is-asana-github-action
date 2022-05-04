@@ -38,7 +38,9 @@ async function main() {
 
   let parseAsanaURL = REGEX.exec(PULL_REQUEST.body);
   if (!parseAsanaURL) {
-    throw new Error("Asana task URL not found!");
+    throw new Error(
+      "Asana task URL not found! Please update the PR decription with a link to the Asana task, the GitHub action will then pass on the next commit or if you close and re-open the PR."
+    );
   }
   // Works for multiple links in PR description
   REGEX.lastIndex = 0;
