@@ -58,7 +58,7 @@ jobs:
 ## Publishing new version:
 
 ```
-git add action.yml index.js node_modules/\* package.json yarn.lock README.md
+git add action.yml index.js package.json yarn.lock README.md
 git commit -m "publishing first version"
 git tag -a -m "v1.0.0" v1.0.0
 git push --follow-tags
