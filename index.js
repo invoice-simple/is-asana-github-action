@@ -23,15 +23,14 @@ async function asanaOperations(asanaPAT, taskId, taskComment) {
 async function main() {
   const ASANA_PAT = core.getInput("asana-pat");
   const TASK_COMMENT = core.getInput("task-comment");
-  const REGEX = new RegExp(`https:\\/\\/app.asana.com\\/(\\d+)\\/(?<project>\\d+)\\/(?<task>\\d+).*?`, "g");
+  const REGEX = new RegExp(
+    `https:\\/\\/app.asana.com\\/(\\d+)\\/(?<project>\\d+)\\/(?<task>\\d+).*?`,
+    "g"
+  );
   const PULL_REQUEST = github.context.payload.pull_request;
   let taskComment = null;
 
-  if (!ASANA_PAT) {
-    throw new Error("Asana PAT not found!");
-  }
-
-  if (TASK_COMMENT) {
+  if (ASANA_PAT && TASK_COMMENT) {
     taskComment = `${TASK_COMMENT} ${PULL_REQUEST.html_url}`;
     core.info(taskComment);
   }
@@ -48,7 +47,7 @@ async function main() {
     let taskId = parseAsanaURL.groups.task;
     if (taskId) {
       core.info(parseAsanaURL.toString());
-      await asanaOperations(ASANA_PAT, taskId, taskComment);
+      ASANA_PAT && (await asanaOperations(ASANA_PAT, taskId, taskComment));
     } else {
       throw new Error(`Invalid Asana task URL`);
     }
