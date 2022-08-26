@@ -1,6 +1,6 @@
 {
   "name": "is-asana-github",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Action to integrate git with asana",
   "main": "index.js",
   "scripts": {
@@ -16,9 +16,9 @@
   "author": "Leon Lee",
   "license": "ISC",
   "dependencies": {
-    "@actions/core": "^1.7.0",
-    "@actions/github": "^5.0.1",
-    "asana": "^0.18.6"
+    "@actions/core": "^1.9.1",
+    "@actions/github": "^5.0.3",
+    "asana": "^1.0.0"
   },
   "resolutions": {
     "**/asana/lodash": "4.17.21"
